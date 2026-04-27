@@ -620,22 +620,108 @@ const phones = [
   },
 ];
 
-function getPhones(phones) {
-  const select = document.getElementById("phone select")
+function getPhones(phones, selectId) {
+  const select = document.getElementById(selectId)
   select.innerHTML = '';
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "null";
+  defaultOption.textContent = "None Selected";
+  select.appendChild(defaultOption);
 
   for (const phone of phones) {
     const phoneOption = document.createElement("option");
     phoneOption.value = phone.id;
+    phoneOption.textContent = phone.name;
     select.appendChild(phoneOption);
   }
-  html = `
-  <div id="specSheet">
-    <h2>${phone.name}</h2>
-    <h3>${phone.brand}</h3>
-    <h3>${phone.chipset}</h3>
-    <h3>${phone.chipsetRating}/100</h3>
-    <h3>$${phone.price}</h3>
-  </div>
-  `;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  getPhones(phones, "phone-select");
+  getPhones(phones, "phone-select-2");
+
+  document.getElementById(`phone-select`).addEventListener('change', (e) => {
+    const phoneId = e.target.value;
+    const specsDiv = document.getElementById('spec-sheet-1');
+    if (phoneId === 'null') {
+      specsDiv.innerHTML = '';
+      return;
+    }
+    const phone = phones.find(p => p.id == phoneId);
+    if (phone) {
+      specsDiv.innerHTML = `
+        <h2>Name: ${phone.name}</h2>
+        <h3>Brand: ${phone.brand}</h3>
+        <h3>Chipset: ${phone.chipset}</h3>
+        <h3>Chipset Rating: ${phone.chipsetRating}</h3>
+        <h3>Price: $${phone.price}</h3>
+        <h3>Storage: ${phone.storage}</h3>
+        <h3>RAM: ${phone.ram}</h3>
+        <h3>Camera: ${phone.camera}</h3>
+        <h3>Display: ${phone.display}</h3>
+        <h3>Battery: ${phone.battery}</h3>
+        <h3>Release Year: ${phone.releaseYear}</h3>
+      `;
+    }
+  });
+
+  document.getElementById('phone-select-2').addEventListener('change', (e) => {
+    const phoneId = e.target.value;
+    const specDiv = document.getElementById('spec-sheet-2');
+    if (phoneId === 'null') {
+      specDiv.innerHTML = '';
+      return;
+    }
+    const phone = phones.find(p => p.id == phoneId);
+    if (phone) {
+      specDiv.innerHTML = `
+        <h2>Name: ${phone.name}</h2>
+        <h3>Brand: ${phone.brand}</h3>
+        <h3>Chipset: ${phone.chipset}</h3>
+        <h3>Chipset Rating: ${phone.chipsetRating}</h3>
+        <h3>Price: $${phone.price}</h3>
+        <h3>Storage: ${phone.storage}</h3>
+        <h3>RAM: ${phone.ram}</h3>
+        <h3>Camera: ${phone.camera}</h3>
+        <h3>Display: ${phone.display}</h3>
+        <h3>Battery: ${phone.battery}</h3>
+        <h3>Release Year: ${phone.releaseYear}</h3>
+      `;
+    }
+  });
+  document.getElementById('compare').addEventListener('click', () => {
+    const phoneId1 = document.getElementById('phone-select-1').value;
+    const phoneId2 = document.getElementById('phone-select-2').value;
+    let phone1cost = '${phone.price}';
+});
+
+  document.getElementById('compare').addEventListener('click', () => {
+    const phone1Id = document.getElementById('phone-select').value;
+    const phone2Id = document.getElementById('phone-select-2').value;
+    if (phone1Id === 'null' || phone2Id === 'null') {
+      alert('Please select two phones to compare.');
+      return;
+    }
+    const phone1 = phones.find(p => p.id == phone1Id);
+    const phone2 = phones.find(p => p.id == phone2Id);
+    if (phone1 && phone2) {
+      const compareDiv = document.getElementById('comparison');
+      compareDiv.innerHTML = `
+        <h2>Comparison</h2>
+        <table>
+          <tr><th>Spec</th><th>${phone1.name}</th><th>${phone2.name}</th></tr>
+          <tr><td>Brand</td><td>${phone1.brand}</td><td>${phone2.brand}</td></tr>
+          <tr><td>Chipset</td><td>${phone1.chipset}</td><td>${phone2.chipset}</td></tr>
+          <tr><td>Chipset Rating</td><td>${phone1.chipsetRating}</td><td>${phone2.chipsetRating}</td></tr>
+          <tr><td>Price</td><td>$${phone1.price}</td><td>$${phone2.price}</td></tr>
+          <tr><td>Storage</td><td>${phone1.storage}</td><td>${phone2.storage}</td></tr>
+          <tr><td>RAM</td><td>${phone1.ram}</td><td>${phone2.ram}</td></tr>
+          <tr><td>Camera</td><td>${phone1.camera}</td><td>${phone2.camera}</td></tr>
+          <tr><td>Display</td><td>${phone1.display}</td><td>${phone2.display}</td></tr>
+          <tr><td>Battery</td><td>${phone1.battery}</td><td>${phone2.battery}</td></tr>
+          <tr><td>Release Year</td><td>${phone1.releaseYear}</td><td>${phone2.releaseYear}</td></tr>
+        </table>
+      `;
+    }
+  });
