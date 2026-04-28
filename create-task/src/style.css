@@ -68,7 +68,7 @@ label {
   margin-bottom: 0.5rem;
 }
 
-#spec-sheet-1, #spec-sheet-2 {
+/* #spec-sheet-1, #spec-sheet-2 {
   border: 1px solid #646cff;
   border-radius: 8px;
   padding: 1rem;
@@ -76,7 +76,7 @@ label {
   background-color: #f9f9f9;
   min-height: 150px;
   text-align: left;
-}
+} */
 #spec-sheet-1 h2, #spec-sheet-2 h2 {
   margin-top: 0;
   color: #646cff;
@@ -97,25 +97,31 @@ label {
   background-color: #535bf2;
 }
 
-#comparison {
-  margin-top: 2rem;
-  text-align: center;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
+  margin-top: 1rem;
 }
 
-th, td {
+table th,
+table td {
   border: 1px solid #646cff;
-  padding: 0.5rem;
+  padding: 0.75rem;
+}
+
+table th {
+  background: rgba(100, 108, 255, 0.12);
   text-align: left;
 }
 
-th {
-  background-color: #f0f0f0;
+.better {
+  background-color: rgba(46, 185, 115, 0.16);
+  color: #16a34a;
+}
+
+.worse {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #b91c1c;
 }
 
 .logo {

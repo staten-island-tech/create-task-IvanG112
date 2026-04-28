@@ -637,11 +637,101 @@ function getPhones(phones, selectId) {
   }
 }
 
+function getSelectedPhone(selectId) {
+  const value = document.getElementById(selectId).value;
+  return value === 'null' ? null : phones.find(p => p.id === Number(value));
+}
+
+function getComparisonClass(key, value1, value2) {
+  const numeric = {
+    chipsetRating: 'higher',
+    price: 'lower',
+    storage: 'higher',
+    ram: 'higher',
+    camera: 'higher',
+    display: 'higher',
+    battery: 'higher',
+    releaseYear: 'higher',
+  };
+
+  const compareValue = (val) => {
+    if (key === 'storage' || key === 'ram') {
+      return Number(val.replace(/[^0-9]/g, ''));
+    }
+    if (key === 'camera' || key === 'battery' || key === 'chipsetRating' || key === 'releaseYear') {
+      return Number(String(val).replace(/[^0-9]/g, ''));
+    }
+    if (key === 'display') {
+      return Number(String(val).replace(/[^0-9.]/g, ''));
+    }
+    if (key === 'price') {
+      return Number(String(val).replace(/[^0-9.]/g, ''));
+    }
+    return null;
+  };
+
+  const rule = numeric[key];
+  if (!rule) return ['', ''];
+
+  const a = compareValue(value1);
+  const b = compareValue(value2);
+  if (Number.isNaN(a) || Number.isNaN(b)) return ['', ''];
+  if (a === b) return ['', ''];
+
+  const isFirstBetter = rule === 'higher' ? a > b : a < b;
+  return isFirstBetter ? ['better', 'worse'] : ['worse', 'better'];
+}
+
+function renderComparisonTable(phone1, phone2) {
+  const comparisonResults = document.getElementById('comparison-results');
+  const specs = [
+    ['Brand', 'brand'],
+    ['Chipset', 'chipset'],
+    ['Chipset Rating', 'chipsetRating'],
+    ['Price', 'price'],
+    ['Storage', 'storage'],
+    ['RAM', 'ram'],
+    ['Camera', 'camera'],
+    ['Display', 'display'],
+    ['Battery', 'battery'],
+    ['Release Year', 'releaseYear'],
+  ];
+
+  const rows = specs.map(([label, key]) => {
+    const value1 = phone1[key];
+    const value2 = phone2[key];
+    const [class1, class2] = getComparisonClass(key, value1, value2);
+    return `
+      <tr>
+        <td>${label}</td>
+        <td class="${class1}">${value1}</td>
+        <td class="${class2}">${value2}</td>
+      </tr>
+    `;
+  }).join('');
+
+  comparisonResults.innerHTML = `
+    <h2>Comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>${phone1.name}</th>
+          <th>${phone2.name}</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  getPhones(phones, "phone-select");
+  getPhones(phones, "phone-select-1");
   getPhones(phones, "phone-select-2");
 
-  document.getElementById(`phone-select`).addEventListener('change', (e) => {
+  document.getElementById(`phone-select-1`).addEventListener('change', (e) => {
     const phoneId = e.target.value;
     const specsDiv = document.getElementById('spec-sheet-1');
     if (phoneId === 'null') {
@@ -690,38 +780,15 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     }
   });
-  document.getElementById('compare').addEventListener('click', () => {
-    const phoneId1 = document.getElementById('phone-select-1').value;
-    const phoneId2 = document.getElementById('phone-select-2').value;
-    let phone1cost = '${phone.price}';
-});
 
   document.getElementById('compare').addEventListener('click', () => {
-    const phone1Id = document.getElementById('phone-select').value;
-    const phone2Id = document.getElementById('phone-select-2').value;
-    if (phone1Id === 'null' || phone2Id === 'null') {
+    const phone1 = getSelectedPhone('phone-select-1');
+    const phone2 = getSelectedPhone('phone-select-2');
+    if (!phone1 || !phone2) {
       alert('Please select two phones to compare.');
       return;
     }
-    const phone1 = phones.find(p => p.id == phone1Id);
-    const phone2 = phones.find(p => p.id == phone2Id);
-    if (phone1 && phone2) {
-      const compareDiv = document.getElementById('comparison');
-      compareDiv.innerHTML = `
-        <h2>Comparison</h2>
-        <table>
-          <tr><th>Spec</th><th>${phone1.name}</th><th>${phone2.name}</th></tr>
-          <tr><td>Brand</td><td>${phone1.brand}</td><td>${phone2.brand}</td></tr>
-          <tr><td>Chipset</td><td>${phone1.chipset}</td><td>${phone2.chipset}</td></tr>
-          <tr><td>Chipset Rating</td><td>${phone1.chipsetRating}</td><td>${phone2.chipsetRating}</td></tr>
-          <tr><td>Price</td><td>$${phone1.price}</td><td>$${phone2.price}</td></tr>
-          <tr><td>Storage</td><td>${phone1.storage}</td><td>${phone2.storage}</td></tr>
-          <tr><td>RAM</td><td>${phone1.ram}</td><td>${phone2.ram}</td></tr>
-          <tr><td>Camera</td><td>${phone1.camera}</td><td>${phone2.camera}</td></tr>
-          <tr><td>Display</td><td>${phone1.display}</td><td>${phone2.display}</td></tr>
-          <tr><td>Battery</td><td>${phone1.battery}</td><td>${phone2.battery}</td></tr>
-          <tr><td>Release Year</td><td>${phone1.releaseYear}</td><td>${phone2.releaseYear}</td></tr>
-        </table>
-      `;
-    }
+
+    renderComparisonTable(phone1, phone2);
   });
+});
